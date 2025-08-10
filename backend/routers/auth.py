@@ -2,7 +2,7 @@ from datetime import timedelta, datetime, timezone
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
 from dotenv import load_dotenv
 import os
@@ -19,6 +19,8 @@ router = APIRouter(
 SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
 ALGORITHM = os.getenv("AUTH_ALGORITHM")
 
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
+
 class UserCreateRequest(BaseModel):
     username: str
     password: str
@@ -28,7 +30,7 @@ class Token(BaseModel):
     token_type: str
     
     
-def authenticate_user(username: str, password: str, db):
+def authenticate_user(username: str, password: str, db: db_dependency):
     user = db.query(User).filter(User.username == username).first()
     if not user:
         return False

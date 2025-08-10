@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth
+from routers import auth, user
 from database import Base, engine
 
 app = FastAPI()
@@ -20,3 +20,4 @@ async def hello():
     return {"message":"Welcome to the Budget App!"}
 
 app.include_router(auth.router)
+app.include_router(user.router)
