@@ -1,4 +1,5 @@
 import ClientSideDisplay from "./ClientSideDisplay";
+import ProtectedRoute from "./components/ProtectedRoute";
 // import ProtectedRoute from "./components/ProtectedRoute";
 type HelloResponse = {
   message: string;
@@ -10,5 +11,9 @@ export default async function Page() {
   });
   const data: HelloResponse = await res.json();
 
-  return <ClientSideDisplay initialMessage={data.message} />;
+  return (
+    <ProtectedRoute>
+      <ClientSideDisplay initialMessage={data.message} />
+    </ProtectedRoute>
+  );
 }
