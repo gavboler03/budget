@@ -3,19 +3,6 @@ interface BudgetProps {
   description?: string;
   income: string;
   balance: string;
-  currency: string;
-  locale: string;
-}
-
-function formatCurrency(
-  amount: number,
-  currency: string = "USD",
-  locale: string = "en-US"
-): string {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(amount);
 }
 
 export default function BudgetComponent({
@@ -28,6 +15,8 @@ export default function BudgetComponent({
     <div className="container">
       <div>{title}</div>
       <div>{description}</div>
+      <div>{income}</div>
+      <div>{balance}</div>
     </div>
   );
 }
