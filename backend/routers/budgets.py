@@ -1,12 +1,11 @@
 from deps import get_current_user
 from typing import Annotated, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-from models import User, Budget
+from models import Budget
 from database import SessionLocal
-from passlib.context import CryptContext
 
 router = APIRouter(
     prefix='/budgets',
@@ -64,6 +63,16 @@ async def create_budget(db: db_dependency, user: user_dependency, budget: Budget
     db.refresh(db_budgets)
     return db_budgets
 
-@router.put("/budget/{budget_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=BudgetBase)
-async def update_budget(db: db_dependency, budget_id: int):
-    pass
+@router.put("/budget/{budget_id}", status_code=status.HTTP_200_OK, response_model=BudgetBase)
+async def update_budget(db: db_dependency, user: user_dependency, budget: BudgetUpdate, budget_id: int):
+    db_budget = db.query(Budget).filter(Budget.id == budget_id, Budget.user_id == user.get('id')).first()
+    if not budget:
+        raise HTTPException(status_code=404, detail="Budget not found.")
+    budget_update = budget.model_dump(exclude_unset=True)
+    for key, value in budget_update.items():
+        setattr(db_budget, key, value)
+    db.commit()
+    db.refresh(db_budget)
+    return db_budget
+    
+    
