@@ -24,7 +24,7 @@ class Budget(Base):
     title = Column(String(20), unique=True, nullable=False)
     description = Column(String(50))
     income = Column(DECIMAL(precision=10, scale=2), nullable=False)
-    balance = Column(DECIMAL(precision=10, scale=2), nullable=False)
+    balance = Column(DECIMAL(precision=10, scale=2), nullable=False, default=0.00)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="budgets")
 

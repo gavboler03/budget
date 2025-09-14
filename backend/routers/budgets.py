@@ -63,7 +63,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 async def get_budgets(db: db_dependency):
     return db.query(Budget).all()
 
-@router.get('/budget/{budget_id}', status_code=status.HTTP_200_OK, response_model=BudgetBase)
+@router.get('/budget/{budget_id}', status_code=status.HTTP_200_OK, response_model=BudgetWithLineItems)
 async def get_budget(db: db_dependency, user: user_dependency, budget_id: int):
     db_budget = db.query(Budget).filter(Budget.id == budget_id, Budget.user_id == user.get("id")).first()
     if not db_budget:
