@@ -40,7 +40,7 @@ class LineItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, unique=True, nullable=False)
-    price = Column(DECIMAL(precision=10, scale=2), nullable=False)
+    amount = Column(DECIMAL(precision=10, scale=2), nullable=False)
     budget_id = Column(Integer, ForeignKey("budgets.id"), nullable=False)
 
     budget = relationship("Budget", back_populates="line_items")
