@@ -17,7 +17,7 @@ export default function RegisterComponent() {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth", {
+      const response = await axios.post("http://localhost:8000/auth", {
         username: registerUsername,
         password: registerPassword,
       });

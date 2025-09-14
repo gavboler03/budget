@@ -6,7 +6,7 @@ type HelloResponse = {
 };
 
 export default async function Page() {
-  const res = await fetch("http://127.0.0.1:8000/", {
+  const res = await fetch("http://localhost:8000/", {
     cache: "no-store",
   });
   const data: HelloResponse = await res.json();

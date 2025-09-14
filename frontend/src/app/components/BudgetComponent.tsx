@@ -3,13 +3,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const [budgets, setBudgets] = useState<any[]>([]);
-const [loading, setLoading] = useState(true);
-
 export default function BudgetComponent() {
+  const [budgets, setBudgets] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/budgets")
+      .get("http://localhost:8000/budgets")
       .then((response) => {
         setBudgets(response.data);
         console.log(response.data);
@@ -24,7 +23,7 @@ export default function BudgetComponent() {
     <div className="container">
       <div className="title">Budgets</div>
       {budgets.map((budget) => (
-        <p>{budget}</p>
+        <p key={budget.id}>{budget.description}</p>
       ))}
     </div>
   );
