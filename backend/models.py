@@ -20,7 +20,7 @@ class User(Base):
 class Budget(Base):
     __tablename__ = "budgets"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     title = Column(String(20), unique=True, nullable=False)
     description = Column(String(50))
     income = Column(DECIMAL(precision=10, scale=2), nullable=False)

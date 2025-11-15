@@ -1,6 +1,6 @@
 import ClientSideDisplay from "./ClientSideDisplay";
 import ProtectedRoute from "./components/ProtectedRoute";
-// import ProtectedRoute from "./components/ProtectedRoute";
+
 type HelloResponse = {
   message: string;
 };
