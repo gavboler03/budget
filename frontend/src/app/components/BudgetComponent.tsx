@@ -3,14 +3,40 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+type Budget = {
+  id: number;
+  title: string;
+  description: string;
+  income: number;
+  balance: number;
+};
+
 export default function BudgetComponent() {
-  const [budgets, setBudgets] = useState<any[]>([]);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<any | null>(null);
+  const [editing, setEditing] = useState<Budget | null>(null);
+  const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  });
+  if (loading) {
+    return <p>Loading budgets...</p>;
+  }
+
+  if (!budgets.length) {
+    return <p>No budgets yet.</p>;
+  }
+
+  const isUnchanged = Boolean(
+    editing &&
+      budgets.find((b) => b.id === editing.id)?.title === editing.title &&
+      budgets.find((b) => b.id === editing.id)?.description ===
+        editing.description &&
+      budgets.find((b) => b.id === editing.id)?.income === editing.income
+  );
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/budgets")
+    api
+      .get("/budgets")
       .then((response) => {
         setBudgets(response.data);
         console.log(response.data);
@@ -23,23 +49,21 @@ export default function BudgetComponent() {
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!editing) return;
 
     try {
-      const response = await axios.put(
-        `http://localhost:8000/budgets/budget/${editing.id}`,
-
+      const { data: updatedBudget } = await api.put(
+        `/budgets/${editing.id}`,
         editing
       );
 
       setBudgets((prev) =>
-        prev.map((b) => (b.id === editing.id ? response.data : b))
+        prev.map((b) => (b.id === updatedBudget.id ? updatedBudget : b))
       );
 
       setEditing(null);
-    } catch (error) {
-      console.error("Error updating budget:", error);
+    } catch (err) {
+      console.error("Update failed", err);
     }
   };
 
@@ -55,13 +79,13 @@ export default function BudgetComponent() {
   return (
     <div className="container">
       <div className="title">Budgets</div>
-      {budgets.map((budget, index) => (
-        <div key={budget.id ?? index}>
+      {budgets.map((budget) => (
+        <div key={budget.id}>
           <p>{budget.title}</p>
           <p>{budget.description}</p>
           <p>{budget.income}</p>
           <p>{budget.balance}</p>
-          <button type="submit" onClick={() => setEditing(budget)}>
+          <button type="button" onClick={() => setEditing(budget)}>
             Edit
           </button>
           <button type="button" onClick={() => handleDelete(budget.id)}>
@@ -91,7 +115,12 @@ export default function BudgetComponent() {
             }
           />
 
-          <button type="submit">Save</button>
+          <button type="submit" disabled={isUnchanged}>
+            Save
+          </button>
+          <button type="button" onClick={() => setEditing(null)}>
+            Cancel
+          </button>
         </form>
       )}
     </div>
