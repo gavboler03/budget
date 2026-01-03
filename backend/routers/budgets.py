@@ -23,7 +23,6 @@ class BudgetBase(BaseModel):
     title: str
     description: Optional[str]
     income: float
-    balance: float
 
     class Config:
         orm_mode = True
@@ -46,7 +45,8 @@ class LineItemBase(BaseModel):
         orm_mode = True
 
 class LineItemCreate(LineItemBase):
-    pass
+    title: str
+    amount: float
 
 class LineItemUpdate(BaseModel):
     title: Optional[str] = None
