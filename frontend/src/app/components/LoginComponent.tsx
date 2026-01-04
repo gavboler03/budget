@@ -52,7 +52,7 @@ export default function LoginComponent() {
         <button type="submit" className="btn btn-primary">
           Login
         </button>
-        <Link href="/register"></Link>
+        <Link href="/register">Register</Link>
       </form>
     </div>
   );

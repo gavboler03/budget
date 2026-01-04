@@ -18,7 +18,7 @@ export default function BudgetComponent() {
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
   });
-  if (loading) {
+  if (loading === true) {
     return <p>Loading budgets...</p>;
   }
 

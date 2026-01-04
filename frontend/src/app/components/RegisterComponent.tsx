@@ -2,6 +2,7 @@
 
 import AuthContext from "@/app/context/AuthContext";
 import axios from "axios";
+import Link from "next/link";
 import React, { useContext, useState } from "react";
 
 export default function RegisterComponent() {
@@ -59,6 +60,7 @@ export default function RegisterComponent() {
         <button type="submit" className="btn btn-primary">
           Register
         </button>
+        <Link href="/login">Login</Link>
       </form>
     </div>
   );
