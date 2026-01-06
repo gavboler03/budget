@@ -1,8 +1,8 @@
 import React from "react";
-import BudgetComponent from "../components/BudgetComponent";
+import { BudgetsListComponent } from "../components/BudgetsComponent";
 
 const Budgets = () => {
-  return <BudgetComponent></BudgetComponent>;
+  return <BudgetsListComponent></BudgetsListComponent>;
 };
 
 export default Budgets;
