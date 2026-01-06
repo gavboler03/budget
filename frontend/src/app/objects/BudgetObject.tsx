@@ -6,5 +6,5 @@ export interface Budget {
   description: string;
   income: number;
   balance: number;
-  // line_item: LineItem[];
+  line_item: LineItem[];
 }
