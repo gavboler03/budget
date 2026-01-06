@@ -1,76 +1,60 @@
 "use client";
 
+import { Budget } from "../objects/BudgetObject";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-type Budget = {
-  id: number;
-  title: string;
-  description: string;
-  income: number;
-  balance: number;
-};
+interface Props {
+  budgetObject: Budget;
+}
 
-export default function BudgetComponent() {
-  const [budgets, setBudgets] = useState<Budget[]>([]);
+export default function BudgetComponent({ budgetObject }: Props) {
+  const { id, title, description, income, balance } = budgetObject;
+  const [budget, setBudget] = useState<Budget | null>(null);
+  const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Budget | null>(null);
+
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
   });
-  if (loading === true) {
-    return <p>Loading budgets...</p>;
-  }
-
-  if (!budgets.length) {
-    return <p>No budgets yet.</p>;
-  }
-
-  const isUnchanged = Boolean(
-    editing &&
-      budgets.find((b) => b.id === editing.id)?.title === editing.title &&
-      budgets.find((b) => b.id === editing.id)?.description ===
-        editing.description &&
-      budgets.find((b) => b.id === editing.id)?.income === editing.income
-  );
 
   useEffect(() => {
     api
-      .get("/budgets")
+      .get(`/budgets/budget/${id}`)
       .then((response) => {
-        setBudgets(response.data);
+        setBudget(response.data);
         console.log(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching items:", error);
+        console.error("Cannot fetch item", error);
       })
       .finally(() => setLoading(false));
   }, []);
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editing) return;
+
+    if (!budget) return;
 
     try {
-      const { data: updatedBudget } = await api.put(
-        `/budgets/${editing.id}`,
-        editing
-      );
+      const response = await api.put(`/budgets/budget/${id}`, {
+        title: budget.title,
+        description: budget.description,
+        income: budget.income,
+      });
 
-      setBudgets((prev) =>
-        prev.map((b) => (b.id === updatedBudget.id ? updatedBudget : b))
-      );
+      setBudget(response.data);
 
-      setEditing(null);
-    } catch (err) {
-      console.error("Update failed", err);
+      setEditing(false);
+    } catch (error) {
+      console.error("Error updating budget:", error);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8000/budgets/${id}`);
-      setBudgets((prev) => prev.filter((b) => b.id !== id));
+      await api.delete(`http://localhost:8000/budgets/budget/${id}`);
+      setBudget(null);
     } catch (error) {
       console.error("Error deleting budget:", error);
     }
@@ -78,47 +62,60 @@ export default function BudgetComponent() {
 
   return (
     <div className="container">
-      <div className="title">Budgets</div>
-      {budgets.map((budget) => (
-        <div key={budget.id}>
-          <p>{budget.title}</p>
-          <p>{budget.description}</p>
-          <p>{budget.income}</p>
-          <p>{budget.balance}</p>
-          <button type="button" onClick={() => setEditing(budget)}>
-            Edit
-          </button>
-          <button type="button" onClick={() => handleDelete(budget.id)}>
-            Delete
-          </button>
+      {editing === true ? (
+        <div key={id}>
+          <p>{title}</p>
+          <p>{description}</p>
+          <p>{income}</p>
+          <p>{balance}</p>
+          {!editing && (
+            <div>
+              (
+              <button type="button" onClick={() => setEditing(true)}>
+                Edit
+              </button>
+              <button type="button" onClick={() => handleDelete()}>
+                Delete
+              </button>
+              )
+            </div>
+          )}
         </div>
-      ))}
-      {editing && (
+      ) : (
         <form onSubmit={handleEdit}>
           <input
-            value={editing.title}
-            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+            value={budget?.title ?? ""}
+            placeholder="Title"
+            onChange={(e) =>
+              setBudget((prev) =>
+                prev ? { ...prev, title: e.target.value } : prev
+              )
+            }
           />
 
           <input
-            value={editing.description}
+            value={budget?.description ?? ""}
+            placeholder="Description"
             onChange={(e) =>
-              setEditing({ ...editing, description: e.target.value })
+              setBudget((prev) =>
+                prev ? { ...prev, description: e.target.value } : prev
+              )
             }
           />
 
           <input
             type="number"
-            value={editing.income}
+            value={budget?.income ?? ""}
+            placeholder="Income"
             onChange={(e) =>
-              setEditing({ ...editing, income: Number(e.target.value) })
+              setBudget((prev) =>
+                prev ? { ...prev, income: Number(e.target.value) } : prev
+              )
             }
           />
 
-          <button type="submit" disabled={isUnchanged}>
-            Save
-          </button>
-          <button type="button" onClick={() => setEditing(null)}>
+          <button type="submit">Save</button>
+          <button type="button" onClick={() => setEditing(false)}>
             Cancel
           </button>
         </form>
