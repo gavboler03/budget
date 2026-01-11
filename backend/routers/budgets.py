@@ -111,7 +111,7 @@ async def update_budget(db: db_dependency, user: user_dependency, budget: Budget
     return db_budget
     
 
-@router.put("/line-items/{item_id}", status_code=status.HTTP_200_OK, response_model=LineItemBase)
+@router.put("/budget/{budget_id}/line-items/{item_id}", status_code=status.HTTP_200_OK, response_model=LineItemBase)
 async def update_line_item(db: db_dependency, user: user_dependency, item_id: int, line_item: LineItemUpdate):
     db_item = db.query(LineItem).join(Budget).filter(LineItem.id == item_id, Budget.user_id == user.get("id")).first()
     if not db_item:
@@ -135,7 +135,7 @@ async def delete_budget(db: db_dependency, user: user_dependency, budget_id: int
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete("/line-items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("budget/{budget_id}/line-items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_line_item(db: db_dependency, user: user_dependency, item_id: int):
     db_item = db.query(LineItem).join(Budget).filter(LineItem.id == item_id, Budget.user_id == user.get("id")).first()
     if not db_item:
