@@ -1,5 +1,5 @@
 export interface LineItem {
   item_id: number;
-  title: string;
+  item_title: string;
   amount: number;
 }
